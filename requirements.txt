@@ -1,2 +1,2 @@
 fastapi[standard]
-pyscopg[binary]
+psycopg[binary]
