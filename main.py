@@ -11,7 +11,12 @@ WRITE = 2
 app = FastAPI()
 
 #? PostgreSQL Handler
-conn = psycopg.connect(dotenv.get_key("./.env", "DATABASE_URL"))
+postgres_url = dotenv.get_key("./.env", "DATABASE_URL")
+if postgres_url == None:
+    print("DATABASE_URL doesn't exists!")
+    exit(1)
+    
+conn = psycopg.connect(postgres_url)
 
 
 #? Routes
@@ -68,7 +73,7 @@ async def superuser(request: Request):
 @app.post("/acl")
 async def acl(request: Request):
     body = dict(await request.json())
-    username, topic, acc = body.get("username"), body.get("topic"), body.get("acc") # 1 = read, 2 = write, 3 = read-write
+    username, topic, acc = str(body.get("username")), str(body.get("topic")), int(str(body.get("acc"))) # 1 = read, 2 = write, 3 = read-write
 
     if "/" not in topic:
         raise HTTPException(status_code=401)
