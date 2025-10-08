@@ -39,8 +39,9 @@ atexit.register(exit_handler)
 @app.post("/auth")
 async def auth(request: Request):
     body = dict(await request.json())
-    username, password = body.get("username"), body.get("password")
-
+    username, password = str(body.get("username")), str(body.get("password"))
+    
+    print_log(f"[Auth] Attempt to access {username}");
     with conn.cursor() as cur:
         #? Get the user data
         cur.execute("SELECT access_token FROM users WHERE id = %s", (username,))
@@ -52,10 +53,12 @@ async def auth(request: Request):
             
             #? If the password is correct
             if user_data[0] == password:
+                print_log(f"[Auth] User {username} GRANTED!");
                 return "ok"
                 
             #? If the password is wrong
             else:
+                print_log(f"[Auth] User {username} UNAUTHORIZED!");
                 raise HTTPException(status_code=401)
 
         #? If there's no user data, maybe it's a device?
@@ -68,10 +71,12 @@ async def auth(request: Request):
             
             #? If the password is correct
             if device_data[0] == password:
+                print_log(f"[Auth] Device {username} GRANTED!");
                 return "ok"
                 
             #? If the password is wrong
             else:
+                print_log(f"[Auth] Device {username} UNAUTHORIZED!");
                 return HTTPException(status_code=401)
         
 
