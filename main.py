@@ -1,8 +1,11 @@
 from fastapi import FastAPI, Request, HTTPException
+from datetime import datetime
 import dotenv
 import psycopg
 import config
+import atexit
 
+#? Convinient Constants
 READ = 4
 PASS = 1
 WRITE = 2
@@ -17,6 +20,19 @@ if postgres_url == None:
     exit(1)
     
 conn = psycopg.connect(postgres_url)
+
+
+#? Setup Logger
+log_file = open(f"logs/{datetime.now().strftime('%d-%m-%Y')}.log", "a+")
+def print_log(msg: str, end: str = "\n"):
+    log_file.write(msg+end)
+
+
+#? Setup Exit Handler
+def exit_handler():
+    log_file.close()
+
+atexit.register(exit_handler)
 
 
 #? Routes
