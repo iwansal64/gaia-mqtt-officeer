@@ -38,6 +38,13 @@ atexit.register(exit_handler)
 #? Routes
 @app.post("/auth")
 async def auth(request: Request):
+    global postgres_url
+    if postgres_url == None:
+        print("DATABASE_URL doesn't exists!")
+        raise HTTPException(status_code=500)
+
+    conn = psycopg.connect(postgres_url)
+    
     body = dict(await request.json())
     username, password = str(body.get("username")), str(body.get("password"))
     
@@ -93,6 +100,13 @@ async def superuser(request: Request):
 
 @app.post("/acl")
 async def acl(request: Request):
+    global postgres_url
+    if postgres_url == None:
+        print("DATABASE_URL doesn't exists!")
+        raise HTTPException(status_code=500)
+    
+    conn = psycopg.connect(postgres_url)
+    
     body = dict(await request.json())
     username, topic, acc = str(body.get("username")), str(body.get("topic")), int(str(body.get("acc"))) # 1 = read, 2 = write, 3 = read-write
 
