@@ -115,7 +115,7 @@ async def acl(request: Request):
 
     with conn.cursor() as cur:
         #? Get the connections by user id
-        cur.execute("SELECT device_id FROM connections WHERE user_id = %s", (username,))
+        cur.execute("SELECT device_id FROM connections WHERE user_id = %s AND user_accepted = true AND device_accepted = true", (username,))
         connections_data = cur.fetchall()
         
         
@@ -144,7 +144,7 @@ async def acl(request: Request):
                     
         
         #? If there's no connection data by user id, maybe it's a device?
-        cur.execute("SELECT id FROM connections WHERE device_id = %s", (username,))
+        cur.execute("SELECT id FROM connections WHERE device_id = %s AND user_accepted = true AND device_accepted = true", (username,))
         connections_data = cur.fetchall()
 
         
