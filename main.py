@@ -162,10 +162,13 @@ async def acl(request: Request):
                 
                 #? If the access mode is WRITE
                 if acc == WRITE and subtopic in config.device_allowed_subtopics:
+                    cur.execute("UPDATE devices SET last_online = NOW() WHERE id = %s", (username,))
+                    conn.commit()
                     return "ok"
 
                 #? If the access mode is READ
                 if (acc == READ or acc == PASS) and subtopic in config.user_allowed_subtopics:
                     return "ok"
     
+
     raise HTTPException(status_code=401)
