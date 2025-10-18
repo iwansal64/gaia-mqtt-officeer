@@ -25,7 +25,8 @@ conn = psycopg.connect(postgres_url)
 #? Setup Logger
 log_file = open(f"logs/{datetime.now().strftime('%d-%m-%Y')}.log", "a+")
 def print_log(msg: str, end: str = "\n"):
-    log_file.write(msg+end)
+    current_time = datetime.now().strftime("%H:%M:%S")
+    log_file.write(f"[{current_time}]"+msg+end)
 
 
 #? Setup Exit Handler
