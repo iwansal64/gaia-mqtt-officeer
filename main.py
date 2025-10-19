@@ -21,6 +21,9 @@ if postgres_url == None:
     
 conn = psycopg.connect(postgres_url)
 
+#? Setup Special User
+SPECIAL_USER = dotenv.get_key("./.env", "SPECIAL_USER")
+SPECIAL_PASS = dotenv.get_key("./.env", "SPECIAL_PASS")
 
 #? Setup Logger
 log_file = open(f"logs/{datetime.now().strftime('%d-%m-%Y')}.log", "a+")
@@ -48,6 +51,9 @@ async def auth(request: Request):
     
     body = dict(await request.json())
     username, password = str(body.get("username")), str(body.get("password"))
+
+    if username == SPECIAL_USER and password == SPECIAL_PASS:
+        return "ok"
     
     print_log(f"[Auth] Attempt to access {username}");
     with conn.cursor() as cur:
@@ -95,6 +101,11 @@ async def auth(request: Request):
 
 @app.post("/superuser")
 async def superuser(request: Request):
+    body = dict(await request.json())
+    username = str(body.get("username"))
+    if username == SPECIAL_USER:
+        return "ok"
+    
     raise HTTPException(status_code=401)
     
     
